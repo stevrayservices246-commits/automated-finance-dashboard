@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quiet Systems Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .header {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .header h1 { color: white; font-size: 2.5rem; margin-bottom: 10px; }
+    .header p { color: rgba(255,255,255,0.8); font-size: 1.1rem; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .stat-card:hover { transform: translateY(-5px); }
+    .stat-card h3 {
+      color: #666;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .stat-card .value { font-size: 2.5rem; font-weight: bold; color: #333; margin-bottom: 5px; }
+    .stat-card .progress { height: 6px; background: #eee; border-radius: 3px; margin-top: 15px; overflow: hidden; }
+    .stat-card .progress-bar { height: 100%; background: linear-gradient(90deg, #667eea, #764ba2); border-radius: 3px; width: 0%; }
+    .models-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .model-card {
+      background: rgba(255,255,255,0.9);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .model-card h4 { color: #333; margin-bottom: 10px; }
+    .model-card .revenue { font-size: 1.5rem; font-weight: bold; color: #667eea; margin-bottom: 5px; }
+    .controls { background: white; border-radius: 15px; padding: 30px; margin-bottom: 30px; }
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      transition: opacity 0.3s ease;
+    }
+    .btn:hover { opacity: 0.9; }
+    .btn-secondary { background: #6c757d; }
+    .alert {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      color: #856404;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .footer { text-align: center; color: rgba(255,255,255,0.6); margin-top: 40px; font-size: 0.9rem; }
+    @media (max-width: 768px) { .header h1 { font-size: 2rem; } .stats-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🚀 Quiet Systems Dashboard</h1>
+      <p>Automated $100K/Month System • Running 24/7 • Zero Face Required</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Today's Revenue</h3>
+        <div class="value" id="todayRevenue">$0.00</div>
+        <div class="progress"><div class="progress-bar" id="pb1"></div></div>
+      </div>
+      <div class="stat-card">
+        <h3>MTD Revenue</h3>
+        <div class="value" id="mtdRevenue">$0.00</div>
+        <div class="progress"><div class="progress-bar" id="pb2"></div></div>
+      </div>
+      <div class="stat-card">
+        <h3>System Health</h3>
+        <div class="value" id="systemHealth">100%</div>
+        <div class="progress"><div class="progress-bar" id="pb3" style="width:100%"></div></div>
+      </div>
+      <div class="stat-card">
+        <h3>Days Remaining</h3>
+        <div class="value" id="daysRemaining">30</div>
+        <div class="progress"><div class="progress-bar" id="pb4" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <div class="alert" id="systemAlert">
+      ⚠️ <span id="alertMessage">System alert</span>
+    </div>
+
+    <h2 style="color: white; margin-bottom: 20px;">📊 Revenue Models</h2>
+    <div class="models-grid">
+      <div class="model-card"><h4>Content Sites</h4><div class="revenue" id="model1">$0</div><div>Target: $30K</div></div>
+      <div class="model-card"><h4>Micro-SaaS</h4><div class="revenue" id="model2">$0</div><div>Target: $40K</div></div>
+      <div class="model-card"><h4>Affiliate</h4><div class="revenue" id="model3">$0</div><div>Target: $30K</div></div>
+      <div class="model-card"><h4>Digital Assets</h4><div class="revenue" id="model4">$0</div><div>Target: $5K</div></div>
+      <div class="model-card"><h4>E-commerce</h4><div class="revenue" id="model5">$0</div><div>Target: $30K</div></div>
+    </div>
+
+    <div class="controls">
+      <h2 style="margin-bottom: 20px;">🤖 System Controls</h2>
+      <button class="btn" onclick="runAutomations()">Run Daily Automations</button>
+      <button class="btn" onclick="updateDashboard()">Update Dashboard</button>
+      <button class="btn btn-secondary" onclick="checkHealth()">System Health Check</button>
+      <button class="btn btn-secondary" onclick="simulateMonth()">Simulate 30 Days</button>
+    </div>
+
+    <div class="footer">
+      <p>Quiet Systems v1.0 • Built for Privacy & Automation • Payments via PayPal + Google Pay</p>
+      <p>⏰ Last updated: <span id="lastUpdate">Never</span></p>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = ''; // same origin (works on Railway/Render)
+    const KEY_STORAGE = 'qs_admin_api_key';
+
+    let API_KEY = localStorage.getItem(KEY_STORAGE);
+    if (!API_KEY) {
+      API_KEY = prompt('Enter Admin API Key (x-api-key):');
+      if (API_KEY) localStorage.setItem(KEY_STORAGE, API_KEY);
+    }
+
+    async function fetchJSON(endpoint, opts = {}) {
+      try {
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          ...opts,
+          headers: {
+            ...(opts.headers || {}),
+            "x-api-key": API_KEY || ""
+          }
+        });
+        return await res.json();
+      } catch (e) {
+        console.error(e);
+        showAlert('API connection failed');
+        return null;
+      }
+    }
+
+    async function updateDashboard() {
+      const data = await fetchJSON('/api/admin/status');
+      if (!data) return;
+
+      const mtd = data.revenue?.mtd || 0;
+      const todayEstimate = mtd / Math.max(1, new Date().getDate());
+
+      document.getElementById('todayRevenue').textContent = '$' + todayEstimate.toFixed(2);
+      document.getElementById('mtdRevenue').textContent = '$' + mtd.toFixed(2);
+
+      const progress = (mtd / 100000) * 100;
+      document.getElementById('pb1').style.width = Math.min(progress, 100) + '%';
+      document.getElementById('pb2').style.width = Math.min(progress, 100) + '%';
+
+      const now = new Date();
+      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+      document.getElementById('daysRemaining').textContent = daysInMonth - now.getDate();
+
+      document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+      showAlert('Dashboard updated', 'success');
+    }
+
+    async function runAutomations() {
+      const data = await fetchJSON('/api/automations/run', { method: 'POST' });
+      if (data && data.successCount !== undefined) {
+        showAlert(`Automations completed: ${data.successCount}/${data.totalTasks}`, 'success');
+        setTimeout(updateDashboard, 1500);
+      }
+    }
+
+    async function checkHealth() {
+      const h = await fetchJSON('/health', { headers: {} }); // no key required
+      if (h && h.status) showAlert('Health: ' + h.status, 'success');
+    }
+
+    async function simulateMonth() {
+      if (!confirm('Simulate 30 days? (This can take time.)')) return;
+      const data = await fetchJSON('/api/automations/simulate-month', { method: 'POST' });
+      if (data && data.totalRevenue !== undefined) {
+        showAlert(`Simulation done: $${Number(data.totalRevenue).toFixed(2)}`, 'success');
+        setTimeout(updateDashboard, 1000);
+      }
+    }
+
+    function showAlert(msg, type = 'warning') {
+      const el = document.getElementById('systemAlert');
+      const m = document.getElementById('alertMessage');
+      m.textContent = msg;
+      el.style.display = 'block';
+      el.style.background = type === 'success' ? '#d4edda' : '#fff3cd';
+      el.style.borderColor = type === 'success' ? '#c3e6cb' : '#ffeaa7';
+      el.style.color = type === 'success' ? '#155724' : '#856404';
+      setTimeout(() => el.style.display = 'none', 3500);
+    }
+
+    updateDashboard();
+    setInterval(updateDashboard, 60000);
+  </script>
+</body>
+</html>

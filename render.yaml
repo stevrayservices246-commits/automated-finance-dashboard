@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: quiet-systems
+    runtime: node
+    plan: starter
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # IMPORTANT: set the rest of your env vars in Render dashboard as "Secret"
+      # (GOOGLE_SHEETS_ID, PAYPAL_CLIENT_ID, PAYPAL_SECRET, etc.)

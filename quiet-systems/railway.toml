@@ -1,0 +1,11 @@
+# Railway Config-as-Code
+# Railway supports railway.toml / railway.json for build & start overrides.
+# Docs: https://docs.railway.com/reference/config-as-code
+# Note: If Railway doesn't honor rootDir here, set the service Root Directory to "backend" in the Railway UI.
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "cd backend && npm install"
+
+[deploy]
+startCommand = "cd backend && node index.js"
